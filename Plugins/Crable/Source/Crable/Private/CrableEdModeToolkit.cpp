@@ -8,6 +8,7 @@
 // ENGINE ACTORS
 #include "Engine/StaticMeshActor.h"
 #include "Engine/DecalActor.h"
+#include "Components/StaticMeshComponent.h"
 #include "Sound/AmbientSound.h"
 
 // UTILITY LIB
@@ -182,19 +183,23 @@ void FCrableEdModeToolkit::Init(const TSharedPtr<IToolkitHost>& InitToolkitHost)
 			{
 				AActor* Actor = LevelActors[LevelActorIndex];
 				FString LabelTitle = Actor->GetActorLabel();
-				FString ActorPackagePath = Actor->GetPathName();
 				UE_LOG(LogTemp, Warning, TEXT("SYNC - > Asset Name, %s"), *LabelTitle);
-				UE_LOG(LogTemp, Warning, TEXT("SYNC - > Asset PackagePath, %s"), *ActorPackagePath);
 
+				// Getting the PathName for the Static Assets
+				UStaticMeshComponent* MeshComponent = Cast<UStaticMeshComponent>(Actor->GetComponentsByClass(UStaticMeshComponent::StaticClass())[0]);
+				UStaticMesh* ActorStaticMesh = MeshComponent->GetStaticMesh();
+				//StaticMesh PathName Context
+				FString ActorStaticMeshPathName = ActorStaticMesh->GetPathName();
 
-				//Spliiter Context
+				//Spliter Context
 				FString Splitter = ".";
 				//TArray<FString> leftSplit;
 				FString leftSplit, rightSplit;
 				//Clipping the Package path name,
-				ActorPackagePath.Split(TEXT("."), &leftSplit, &rightSplit, ESearchCase::IgnoreCase, ESearchDir::FromEnd);
+				ActorStaticMeshPathName.Split(TEXT("."), &leftSplit, &rightSplit, ESearchCase::IgnoreCase, ESearchDir::FromEnd);
 				UE_LOG(LogTemp, Warning, TEXT("SYNC - > Trimmed Right, %s"), *rightSplit);
 				UE_LOG(LogTemp, Warning, TEXT("SYNC - > Trimmed Left, %s"), *leftSplit);
+				UE_LOG(LogTemp, Warning, TEXT("SYNC - > MeshComponent, %s"), *ActorStaticMeshPathName);
 
 				//Checking the asset Name and replacing it if it is not matching with the scene clip
 				if (LabelTitle != rightSplit)
@@ -217,7 +222,7 @@ void FCrableEdModeToolkit::Init(const TSharedPtr<IToolkitHost>& InitToolkitHost)
 				FString AssetName = AssetObject->GetFName().ToString();
 				FString AssetIndex = AssetObject->GetPathName();
 				UE_LOG(LogTemp, Warning, TEXT("SYNC - > Asset Name, %s"), *AssetName);
-				UE_LOG(LogTemp, Warning, TEXT("SYNC - > Path, %s"), *AssetIndex);
+				//UE_LOG(LogTemp, Warning, TEXT("SYNC - > Path, %s"), *AssetIndex);
 				UE_LOG(LogTemp, Warning, TEXT("SYNC - > Index, %d"), index);
 
 			}
